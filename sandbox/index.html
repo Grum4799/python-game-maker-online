@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sandbox — pysite</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">py<span class="dot">.</span>site</div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="index.html" class="current">Sandbox</a>
+    <a href="../games/index.html">Games</a>
+    <a href="../make/index.html">Make</a>
+  </nav>
+</header>
+
+<main>
+  <div class="eyebrow">live interpreter</div>
+  <h1 style="font-size: 1.7rem;">Sandbox</h1>
+  <p class="lede">
+    Write Python, click run. <code>numpy</code>, <code>math</code>, <code>statistics</code>,
+    <code>random</code>, and <code>matplotlib</code> are ready to import — anything else
+    installable with pure Python or a WASM wheel can be added below.
+  </p>
+
+  <div class="terminal">
+    <div class="bar"><span></span><span></span><span></span></div>
+    <textarea id="code" spellcheck="false">import numpy as np
+
+# a tiny demo: generate points and summarize them
+data = np.random.default_rng(seed=0).normal(loc=10, scale=2, size=1000)
+print(f"mean:   {data.mean():.3f}")
+print(f"stdev:  {data.std():.3f}")
+print(f"min/max: {data.min():.2f} / {data.max():.2f}")</textarea>
+    <div class="out" id="output">output will appear here</div>
+  </div>
+
+  <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap: wrap;">
+    <button class="btn" id="run">Run &#9654;</button>
+    <button class="btn ghost" id="clear">Clear output</button>
+    <span id="status" style="font-family: var(--mono); font-size: 0.82rem; color: var(--ink-dim);">loading interpreter&hellip;</span>
+  </div>
+
+  <h2 style="margin-top: 2.5rem; font-size: 1.05rem;">Load another package</h2>
+  <p class="lede" style="max-width: 60ch; margin-bottom: 0.8rem;">
+    Type a package name available on <a href="https://pyodide.org/en/stable/usage/packages-in-pyodide.html" target="_blank" rel="noopener">Pyodide's built-in list</a>
+    (e.g. <code>pandas</code>, <code>sympy</code>, <code>scikit-learn</code>) or any pure-Python
+    package on PyPI, and it'll be importable in the code above.
+  </p>
+  <div style="display:flex; gap:0.6rem;">
+    <input id="pkg" placeholder="e.g. pandas" style="font-family: var(--mono); background: var(--bg-raised); border: 1px solid var(--rule); color: var(--ink); padding: 0.5rem 0.7rem; border-radius: 6px; flex: 1;">
+    <button class="btn ghost" id="loadpkg">Install</button>
+  </div>
+  <div id="pkg-status" style="font-family: var(--mono); font-size: 0.8rem; color: var(--ink-dim); margin-top: 0.5rem;"></div>
+</main>
+
+<footer>tkinter and other native-GUI libraries can't run here — see the home page for why</footer>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+<script>
+let pyodide;
+const statusEl = document.getElementById("status");
+const outputEl = document.getElementById("output");
+const runBtn = document.getElementById("run");
+
+async function init() {
+  pyodide = await loadPyodide();
+  await pyodide.loadPackage(["numpy", "matplotlib", "micropip"]);
+  statusEl.textContent = "ready";
+  runBtn.disabled = false;
+}
+runBtn.disabled = true;
+init().catch(e => { statusEl.textContent = "failed to load: " + e; });
+
+function captureAndRun(code) {
+  pyodide.setStdout({ batched: (s) => { outputEl.textContent += s + "\n"; } });
+  pyodide.setStderr({ batched: (s) => { outputEl.textContent += s + "\n"; outputEl.classList.add("error"); } });
+  return pyodide.runPythonAsync(code);
+}
+
+runBtn.addEventListener("click", async () => {
+  outputEl.textContent = "";
+  outputEl.classList.remove("error");
+  runBtn.disabled = true;
+  const code = document.getElementById("code").value;
+  try {
+    await captureAndRun(code);
+    if (!outputEl.textContent) outputEl.textContent = "(ran with no output)";
+  } catch (err) {
+    outputEl.classList.add("error");
+    outputEl.textContent += String(err);
+  } finally {
+    runBtn.disabled = false;
+  }
+});
+
+document.getElementById("clear").addEventListener("click", () => {
+  outputEl.textContent = "output will appear here";
+  outputEl.classList.remove("error");
+});
+
+document.getElementById("loadpkg").addEventListener("click", async () => {
+  const name = document.getElementById("pkg").value.trim();
+  const pkgStatus = document.getElementById("pkg-status");
+  if (!name) return;
+  pkgStatus.textContent = `installing ${name}…`;
+  try {
+    try {
+      await pyodide.loadPackage(name);
+    } catch {
+      const micropip = pyodide.pyimport("micropip");
+      await micropip.install(name);
+    }
+    pkgStatus.textContent = `${name} is ready — import it in the code above.`;
+  } catch (err) {
+    pkgStatus.textContent = `couldn't install ${name}: ${err}`;
+  }
+});
+</script>
+</body>
+</html>

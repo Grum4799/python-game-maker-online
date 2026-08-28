@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Games — pysite</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">py<span class="dot">.</span>site</div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../sandbox/index.html">Sandbox</a>
+    <a href="index.html" class="current">Games</a>
+    <a href="../make/index.html">Make</a>
+  </nav>
+</header>
+
+<main>
+  <div class="eyebrow">two ways to play, two ways to build</div>
+  <h1 style="font-size: 1.7rem;">Games</h1>
+  <p class="lede">
+    Some games here are built entirely in the browser with the site's own lightweight
+    engine — no local install, ever. Others are real <code>pygame</code> programs
+    cross-compiled ahead of time with pygbag, for when you outgrow the built-in engine.
+  </p>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="tag">webgame &middot; in-browser</span>
+      <h3>Dodger (in-browser build)</h3>
+      <p>The same game, but written and playable entirely on this site — open it in the editor to see or remix the code.</p>
+      <a href="../make/index.html">Open in editor &rarr;</a>
+    </div>
+    <div class="card">
+      <span class="tag">pygame &middot; pygbag build</span>
+      <h3>Dodger (compiled)</h3>
+      <p>Move with arrow keys, dodge the falling blocks. A real pygame script, compiled ahead of time — the advanced path.</p>
+      <a href="dodger/build/web/index.html">Play &rarr;</a>
+    </div>
+  </div>
+
+  <h2 style="margin-top: 2.5rem; font-size: 1.05rem;">Building in-browser (no install)</h2>
+  <p class="lede" style="max-width: 66ch;">
+    Head to <a href="../make/index.html">Make</a> — it's a code editor and live canvas
+    in one page. Games written there use the site's own <code>webgame</code> module, a
+    pygame-style API (Rect, Surface, draw, events, a frame clock) that runs directly
+    under Pyodide. Nothing to install, nothing to push — your code is saved to the
+    browser as you type.
+  </p>
+
+  <h2 style="margin-top: 2rem; font-size: 1.05rem;">Building the advanced way (real pygame)</h2>
+  <p class="lede" style="max-width: 66ch;">
+    Drop a pygame script (written with the async main-loop pattern pygbag expects) into
+    <code>games/&lt;your-game&gt;/main.py</code>. The included GitHub Actions workflow builds
+    every game with pygbag on each push and commits the compiled output, so a card added
+    here just needs to point at <code>games/&lt;your-game&gt;/build/web/index.html</code>.
+    See <code>games/dodger/main.py</code> for a working example, and the repo README for
+    the full pygbag walkthrough. This path needs a local Python install to build — the
+    in-browser editor above doesn't.
+  </p>
+</main>
+
+<footer>tkinter and other native-GUI libraries can't run here — see the home page for why</footer>
+</body>
+</html>

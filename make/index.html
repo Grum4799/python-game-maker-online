@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Make a game — pysite</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  .studio { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; }
+  @media (max-width: 860px) { .studio { grid-template-columns: 1fr; } }
+  .studio textarea { min-height: 460px; font-size: 0.85rem; }
+  #game-canvas { display: block; width: 100%; background: #000; border-radius: 8px; }
+  .canvas-wrap { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 10px; padding: 0.9rem; }
+  .canvas-wrap .cap { font-family: var(--mono); font-size: 0.8rem; color: var(--ink-dim); margin-bottom: 0.6rem; display:flex; justify-content: space-between; }
+  #game-caption { color: var(--teal); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">py<span class="dot">.</span>site</div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../sandbox/index.html">Sandbox</a>
+    <a href="../games/index.html">Games</a>
+    <a href="index.html" class="current">Make</a>
+  </nav>
+</header>
+
+<main style="max-width: 1200px;">
+  <div class="eyebrow">no downloads, no build step</div>
+  <h1 style="font-size: 1.7rem;">Make a game</h1>
+  <p class="lede">
+    Write pygame-style code on the left, run it on the right. Everything executes
+    live in this tab via Pyodide — nothing is uploaded and nothing touches your
+    computer. Your code is saved to this browser automatically.
+  </p>
+
+  <div class="studio">
+    <div class="terminal" style="margin: 0.5rem 0 0;">
+      <div class="bar"><span></span><span></span><span></span></div>
+      <textarea id="code" spellcheck="false"></textarea>
+      <div class="out" id="log">console output will appear here</div>
+    </div>
+
+    <div>
+      <div class="canvas-wrap">
+        <div class="cap"><span>preview</span><span id="game-caption"></span></div>
+        <canvas id="game-canvas" width="480" height="640"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap: wrap; margin-top: 1rem;">
+    <button class="btn" id="run">Run &#9654;</button>
+    <button class="btn ghost" id="stop-btn">Stop</button>
+    <button class="btn ghost" id="reset">Reset to example</button>
+    <span id="status" style="font-family: var(--mono); font-size: 0.82rem; color: var(--ink-dim);">loading interpreter&hellip;</span>
+  </div>
+
+  <h2 style="margin-top: 2.5rem; font-size: 1.05rem;">API cheat sheet</h2>
+  <p class="lede" style="max-width: 68ch; margin-bottom: 0.5rem;">
+    <code>webgame</code> reads like pygame: <code>Rect</code>, <code>Surface</code>,
+    <code>draw.rect/circle/line</code>, <code>event.get()</code>, <code>key.get_pressed()</code>,
+    <code>font.SysFont</code>. One difference — since nothing can block the browser's
+    main thread, the clock has to be awaited:
+  </p>
+  <div class="terminal" style="margin-top: 0.75rem;">
+    <div class="bar"><span></span><span></span><span></span></div>
+    <pre class="out" style="color: var(--ink);">dt_ms = await clock.tick(60)   # webgame — note the await
+dt_ms = clock.tick(60)         # real pygame — no await</pre>
+  </div>
+  <p class="lede" style="max-width: 68ch;">
+    Want real pygame instead — more of the API, actual sprite groups, sound, the
+    works? The <a href="../games/index.html">games page</a> covers the pygbag path,
+    which compiles a real pygame script ahead of time. That one needs a local Python
+    install to build; this page never does.
+  </p>
+</main>
+
+<footer>code is saved to this browser only — clearing site data will remove it</footer>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+<script>
+const EXAMPLE = `import webgame as pg
+
+WIDTH, HEIGHT = 480, 640
+PLAYER_SIZE = 28
+PLAYER_SPEED = 320
+BLOCK_SIZE = 24
+SPAWN_EVERY = 0.5
+
+WHITE = (237, 233, 223)
+AMBER = (232, 163, 61)
+TEAL = (79, 184, 166)
+BG = (20, 23, 31)
+
+pg.init()
+screen = pg.display.set_mode((WIDTH, HEIGHT))
+pg.display.set_caption("Dodger")
+clock = pg.time.Clock()
+font = pg.font.SysFont("monospace", 20)
+big_font = pg.font.SysFont("monospace", 36, bold=True)
+
+import random
+rng = random.Random()
+
+player = pg.Rect(WIDTH // 2 - PLAYER_SIZE // 2, HEIGHT - 60, PLAYER_SIZE, PLAYER_SIZE)
+blocks = []
+spawn_timer = 0.0
+survived = 0.0
+game_over = False
+
+
+def spawn_block():
+    x = rng.randint(0, WIDTH - BLOCK_SIZE)
+    speed = rng.uniform(120, 260)
+    blocks.append([pg.Rect(x, -BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE), speed])
+
+
+def reset():
+    global blocks, spawn_timer, survived, game_over
+    blocks = []
+    spawn_timer = 0.0
+    survived = 0.0
+    game_over = False
+    player.x = WIDTH // 2 - PLAYER_SIZE // 2
+    player.y = HEIGHT - 60
+
+
+async def main():
+    global spawn_timer, survived, game_over
+    running = True
+    while running:
+        dt = (await clock.tick(60)) / 1000.0
+
+        for e in pg.event.get():
+            if e.type == pg.QUIT:
+                running = False
+            if e.type == pg.KEYDOWN and game_over and e.key == pg.K_SPACE:
+                reset()
+
+        pressed = pg.key.get_pressed()
+        if not game_over:
+            if pressed[pg.K_LEFT] or pressed[pg.K_a]:
+                player.x -= PLAYER_SPEED * dt
+            if pressed[pg.K_RIGHT] or pressed[pg.K_d]:
+                player.x += PLAYER_SPEED * dt
+            player.x = max(0, min(WIDTH - PLAYER_SIZE, player.x))
+
+            spawn_timer += dt
+            if spawn_timer >= SPAWN_EVERY:
+                spawn_timer = 0.0
+                spawn_block()
+
+            for b in blocks:
+                b[0].y += b[1] * dt
+            blocks[:] = [b for b in blocks if b[0].y < HEIGHT + BLOCK_SIZE]
+
+            for b in blocks:
+                if player.colliderect(b[0]):
+                    game_over = True
+
+            survived += dt
+
+        screen.fill(BG)
+        timer_surf = font.render(f"survived: {survived:5.1f}s", True, TEAL)
+        screen.blit(timer_surf, (12, 12))
+        pg.draw.rect(screen, AMBER, player, border_radius=6)
+        for b in blocks:
+            pg.draw.rect(screen, WHITE, b[0], border_radius=4)
+
+        if game_over:
+            overlay = pg.Surface((WIDTH, HEIGHT))
+            overlay.fill((20, 23, 31, 200))
+            screen.blit(overlay, (0, 0))
+            msg = big_font.render("game over", True, AMBER)
+            hint = font.render("press space to retry", True, WHITE)
+            screen.blit(msg, msg.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 20)))
+            screen.blit(hint, hint.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 24)))
+
+    pg.quit()
+
+await main()
+`;
+
+const STORAGE_KEY = "pysite-make-code";
+const codeEl = document.getElementById("code");
+const logEl = document.getElementById("log");
+const statusEl = document.getElementById("status");
+const runBtn = document.getElementById("run");
+
+codeEl.value = localStorage.getItem(STORAGE_KEY) || EXAMPLE;
+codeEl.addEventListener("input", () => {
+  localStorage.setItem(STORAGE_KEY, codeEl.value);
+});
+
+document.getElementById("reset").addEventListener("click", () => {
+  codeEl.value = EXAMPLE;
+  localStorage.setItem(STORAGE_KEY, EXAMPLE);
+});
+
+let pyodide;
+runBtn.disabled = true;
+
+async function init() {
+  pyodide = await loadPyodide();
+  const src = await (await fetch("../assets/webgame.py")).text();
+  pyodide.FS.writeFile("webgame.py", src);
+  statusEl.textContent = "ready";
+  runBtn.disabled = false;
+}
+init().catch(e => { statusEl.textContent = "failed to load: " + e; });
+
+runBtn.addEventListener("click", async () => {
+  logEl.textContent = "";
+  logEl.classList.remove("error");
+  runBtn.disabled = true;
+  pyodide.setStdout({ batched: (s) => { logEl.textContent += s + "\n"; } });
+  pyodide.setStderr({ batched: (s) => { logEl.textContent += s + "\n"; logEl.classList.add("error"); } });
+  try {
+    // fresh module each run so edits are picked up
+    await pyodide.runPythonAsync("import sys; sys.modules.pop('webgame', None)");
+    await pyodide.runPythonAsync(codeEl.value);
+  } catch (err) {
+    logEl.classList.add("error");
+    logEl.textContent += String(err);
+  } finally {
+    runBtn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

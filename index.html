@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pysite — Python, running right here</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">py<span class="dot">.</span>site</div>
+  <nav>
+    <a href="index.html" class="current">Home</a>
+    <a href="sandbox/index.html">Sandbox</a>
+    <a href="games/index.html">Games</a>
+    <a href="make/index.html">Make</a>
+  </nav>
+</header>
+
+<main>
+  <div class="eyebrow">no install &middot; no server &middot; just a browser tab</div>
+  <h1 style="font-size: 2.1rem;">This page is a Python interpreter.</h1>
+  <p class="lede">
+    Nothing below was pre-rendered. The line you're about to see is executed live,
+    in your browser, by an actual CPython build compiled to WebAssembly. Same runtime
+    powers the sandbox and the games on this site.
+  </p>
+
+  <div class="terminal">
+    <div class="bar"><span></span><span></span><span></span></div>
+    <pre id="boot-log" class="out">booting interpreter&hellip;</pre>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="tag">/sandbox</span>
+      <h3>Run any pure-Python library</h3>
+      <p>A live editor with numpy, matplotlib, and friends preloaded. Write code, hit run, see output — no setup.</p>
+      <a href="sandbox/index.html">Open the sandbox &rarr;</a>
+    </div>
+    <div class="card">
+      <span class="tag">/games</span>
+      <h3>Play games built with pygame</h3>
+      <p>Full games with GUIs and real-time input, compiled ahead of time with pygbag so they run at native-ish speed.</p>
+      <a href="games/index.html">Browse games &rarr;</a>
+    </div>
+    <div class="card">
+      <span class="tag">/make</span>
+      <h3>Build a game, entirely in-tab</h3>
+      <p>A pygame-style editor and live canvas with no build step at all — write, run, and save your game without leaving the browser.</p>
+      <a href="make/index.html">Open the editor &rarr;</a>
+    </div>
+  </div>
+
+  <h2 style="margin-top: 3rem; font-size: 1.15rem;">Why not tkinter?</h2>
+  <p class="lede" style="max-width: 68ch;">
+    tkinter opens a native desktop window — it has no browser equivalent, so it can't
+    run on a page like this one. Everything here targets the browser directly instead:
+    the sandbox uses <a href="https://pyodide.org" target="_blank" rel="noopener">Pyodide</a>
+    for general-purpose code, and games use <a href="https://pygame-web.github.io/" target="_blank" rel="noopener">pygbag</a>
+    to compile pygame to WebAssembly with a canvas in place of a window.
+  </p>
+</main>
+
+<footer>built as a static site &middot; served from GitHub Pages</footer>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+<script>
+async function boot() {
+  const log = document.getElementById("boot-log");
+  const pyodide = await loadPyodide();
+  const result = await pyodide.runPythonAsync(`
+import sys, platform
+f"Python {platform.python_version()} ({sys.platform}) — ready."
+  `);
+  log.textContent = ">>> " + result;
+}
+boot().catch(e => {
+  document.getElementById("boot-log").textContent = "interpreter failed to load: " + e;
+});
+</script>
+</body>
+</html>

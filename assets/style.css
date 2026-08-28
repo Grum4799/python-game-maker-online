@@ -1,0 +1,173 @@
+/* ---------------------------------------------------------
+   Console theme — shared across index / sandbox / games
+--------------------------------------------------------- */
+:root {
+  --bg:        #14171f;
+  --bg-raised: #1b1f2a;
+  --ink:       #ede9df;
+  --ink-dim:   #9aa0ad;
+  --amber:     #e8a33d;
+  --teal:      #4fb8a6;
+  --rule:      #2a2f3d;
+  --mono: "IBM Plex Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { color-scheme: dark; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.5;
+}
+
+a { color: var(--teal); text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--mono);
+}
+
+.site-header .brand {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+.site-header .brand .dot { color: var(--amber); }
+
+.site-header nav a {
+  margin-left: 1.5rem;
+  color: var(--ink-dim);
+  font-size: 0.92rem;
+}
+.site-header nav a.current,
+.site-header nav a:hover { color: var(--amber); text-decoration: none; }
+
+main { max-width: 920px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+
+h1, h2, h3 {
+  font-family: var(--mono);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.6rem;
+}
+
+p.lede { color: var(--ink-dim); font-size: 1.08rem; max-width: 60ch; }
+
+.terminal {
+  background: var(--bg-raised);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 1.75rem 0;
+}
+.terminal .bar {
+  display: flex;
+  gap: 6px;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--rule);
+}
+.terminal .bar span {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--rule);
+}
+.terminal .bar span:nth-child(1) { background: #e0645a; }
+.terminal .bar span:nth-child(2) { background: #e0b95a; }
+.terminal .bar span:nth-child(3) { background: #5ac97a; }
+
+.terminal pre, .terminal .out {
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  padding: 1rem 1.1rem;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.terminal textarea {
+  width: 100%;
+  min-height: 140px;
+  background: transparent;
+  color: var(--ink);
+  border: none;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  padding: 1rem 1.1rem;
+  resize: vertical;
+}
+.terminal .out { color: var(--teal); border-top: 1px solid var(--rule); min-height: 2.4rem; }
+.terminal .out.error { color: #e0645a; }
+
+.btn {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  background: var(--amber);
+  color: #14171f;
+  border: none;
+  padding: 0.55rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn:disabled { opacity: 0.5; cursor: wait; }
+.btn.ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.card {
+  background: var(--bg-raised);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 1.2rem;
+}
+.card h3 { margin: 0 0 0.4rem; font-size: 1.02rem; }
+.card p { color: var(--ink-dim); font-size: 0.9rem; margin: 0 0 0.9rem; }
+.card .tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--teal);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  margin-bottom: 0.7rem;
+}
+
+footer {
+  border-top: 1px solid var(--rule);
+  color: var(--ink-dim);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  padding: 1.5rem;
+  text-align: center;
+}
