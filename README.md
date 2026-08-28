@@ -26,6 +26,7 @@ assets/webgame.py         the pygame-style engine that powers Make — Rect,
                            Surface, draw, event, key, an async frame clock
 games/index.html          hub linking to both the in-browser and compiled games
 games/dodger/main.py       example real pygame game (async-loop pattern pygbag needs)
+learn/index.html           a zero-experience walkthrough for a first-time coder
 assets/style.css          shared styling
 .github/workflows/deploy.yml   builds every game with pygbag, deploys to Pages
 ```

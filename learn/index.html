@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learn — pysite</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  .step { display: flex; gap: 1rem; margin: 1.4rem 0; }
+  .step .num {
+    font-family: var(--mono); font-weight: 600; color: var(--amber);
+    background: var(--bg-raised); border: 1px solid var(--rule);
+    width: 2rem; height: 2rem; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 0.9rem;
+  }
+  .step h4 { margin: 0.1rem 0 0.35rem; }
+  .step p { margin: 0; color: var(--ink-dim); }
+  .step code { color: var(--teal); }
+  .challenge-list { padding-left: 1.1rem; color: var(--ink-dim); }
+  .challenge-list li { margin: 0.5rem 0; }
+  .oops { border-left: 3px solid #e0645a; padding-left: 0.9rem; margin: 1rem 0; }
+  .oops h4 { margin: 0 0 0.2rem; color: #e0938c; font-size: 0.95rem; }
+  .oops p { margin: 0; color: var(--ink-dim); font-size: 0.92rem; }
+  code, .terminal pre, .terminal .out { word-break: break-word; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">py<span class="dot">.</span>site</div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../sandbox/index.html">Sandbox</a>
+    <a href="../games/index.html">Games</a>
+    <a href="../make/index.html">Make</a>
+    <a href="index.html" class="current">Learn</a>
+  </nav>
+</header>
+
+<main>
+  <div class="eyebrow">zero experience required</div>
+  <h1 style="font-size: 1.9rem;">Your first game, in about 15 minutes</h1>
+  <p class="lede">
+    You don't need to install anything or already know how to code. This page
+    walks you through changing a real game, piece by piece, until it makes
+    sense. By the end you'll understand enough to start changing things on
+    your own.
+  </p>
+
+  <div class="step">
+    <div class="num">1</div>
+    <div>
+      <h4>Open the game editor</h4>
+      <p>
+        Go to the <a href="../make/index.html">Make</a> page. You'll see code
+        on the left and a black rectangle (the canvas) on the right — that's
+        where the game will appear.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">2</div>
+    <div>
+      <h4>Click Run</h4>
+      <p>
+        An orange square appears. Press the arrow keys — it moves. Press
+        space — it changes color. That's a whole game, already written for
+        you. Everything below is about understanding and changing it.
+      </p>
+    </div>
+  </div>
+
+  <h2 style="margin-top: 2.5rem; font-size: 1.2rem;">The four ideas behind every game</h2>
+  <p class="lede">
+    Every line of code in that box is doing one of four things. Once these
+    click, you can read almost any short program.
+  </p>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="tag">variable</span>
+      <h3>A labeled box for a value</h3>
+      <p><code>SPEED = 200</code> means "make a box called SPEED and put 200 in it." Later, the code says <code>box.x += SPEED * dt</code> — it's using the number from the box.</p>
+    </div>
+    <div class="card">
+      <span class="tag">if statement</span>
+      <h3>Do this, only when...</h3>
+      <p><code>if pressed[pg.K_LEFT]:</code> means "only run the next line if the left arrow key is currently held down." Skip it otherwise.</p>
+    </div>
+    <div class="card">
+      <span class="tag">loop</span>
+      <h3>Repeat, forever</h3>
+      <p><code>while running:</code> repeats everything inside it, over and over — once per frame. That's the entire trick behind animation: draw, wait a tiny bit, draw again, ~60 times a second.</p>
+    </div>
+    <div class="card">
+      <span class="tag">function</span>
+      <h3>A named recipe</h3>
+      <p><code>pg.draw.rect(...)</code> is a function someone else already wrote — you just tell it what color and where, and it handles the actual drawing.</p>
+    </div>
+  </div>
+
+  <h2 style="margin-top: 3rem; font-size: 1.2rem;">Now change it yourself</h2>
+  <p class="lede">
+    Make each change below, click Run again, and see what happened before
+    moving to the next one. There's no way to break anything permanently —
+    "Reset to example" on the Make page brings back the original any time.
+  </p>
+
+  <div class="step">
+    <div class="num">1</div>
+    <div>
+      <h4>Change the color</h4>
+      <p>
+        Find <code>color = (232, 163, 61)</code> near the top. Those three
+        numbers are red, green, blue — each from 0 to 255. Change them to
+        <code>(255, 0, 0)</code> and run it. The square is red now. Try
+        <code>(0, 255, 0)</code>, then whatever you want.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">2</div>
+    <div>
+      <h4>Make it faster</h4>
+      <p>
+        Find <code>SPEED = 200</code>. That's how many pixels it moves per
+        second. Change it to <code>600</code> and run — the square zips
+        around. Try <code>50</code> — it crawls.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">3</div>
+    <div>
+      <h4>Make it bigger</h4>
+      <p>
+        Find the line that creates the square:
+        <code>box = pg.Rect(WIDTH // 2 - 20, HEIGHT // 2 - 20, 40, 40)</code>.
+        The last two numbers are its width and height. Change both
+        <code>40</code>s to <code>80</code> — bigger square. The
+        <code>- 20</code>s are there to keep it centered; if you're curious,
+        try changing the size without touching them and see what happens to
+        where it starts.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">4</div>
+    <div>
+      <h4>Add a new key</h4>
+      <p>
+        Find this block:
+      </p>
+      <div class="terminal" style="margin: 0.6rem 0;">
+        <div class="bar"><span></span><span></span><span></span></div>
+        <pre class="out" style="color: var(--ink);">if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
+    color = (79, 184, 166) if color != (79, 184, 166) else (232, 163, 61)</pre>
+      </div>
+      <p>
+        Copy those two lines, paste them right below, and change
+        <code>pg.K_SPACE</code> to <code>pg.K_r</code> and the two colors to
+        something new. Now both space <em>and</em> R change the color — to
+        different colors.
+      </p>
+    </div>
+  </div>
+
+  <h2 style="margin-top: 3rem; font-size: 1.2rem;">Try these on your own</h2>
+  <p class="lede">No answers given — this is where it starts being genuinely yours.</p>
+  <ul class="challenge-list">
+    <li>Make the square move twice as fast when you hold a key called <code>pg.K_LSHIFT</code>.</li>
+    <li>Make the timer text in the corner a different color.</li>
+    <li>Make the circle near the bottom follow the square's <code>x</code> position instead of staying still.</li>
+    <li>Make the square wrap around to the other side of the screen instead of stopping at the edge (hint: look at where <code>box.x</code> gets clamped with <code>max</code>/<code>min</code>).</li>
+    <li>Make pressing <code>pg.K_UP</code> and <code>pg.K_DOWN</code> also change the square's size instead of moving it.</li>
+  </ul>
+
+  <h2 style="margin-top: 3rem; font-size: 1.2rem;">When something goes wrong</h2>
+  <p class="lede">Every beginner hits these. They're not a sign you did something badly wrong.</p>
+
+  <div class="oops">
+    <h4>IndentationError</h4>
+    <p>Python cares about spaces at the start of a line. If a line inside an <code>if</code> or <code>while</code> isn't lined up with the lines around it, fix the spacing so it matches.</p>
+  </div>
+  <div class="oops">
+    <h4>SyntaxError: expected ':'</h4>
+    <p>Lines that start a block — <code>if</code>, <code>while</code>, <code>for</code>, <code>def</code> — need a colon at the end. Easy to forget.</p>
+  </div>
+  <div class="oops">
+    <h4>NameError: name 'x' is not defined</h4>
+    <p>You used a variable before creating it, or misspelled its name. Check the spelling matches exactly, including capital letters.</p>
+  </div>
+  <div class="oops">
+    <h4>Nothing seems to happen when you click Run</h4>
+    <p>Check the text next to the Run button says "ready," not "loading" or "failed." The engine takes a couple seconds to load the first time.</p>
+  </div>
+
+  <h2 style="margin-top: 3rem; font-size: 1.2rem;">Once this all feels comfortable</h2>
+  <p class="lede" style="max-width: 66ch;">
+    That's the point to start learning the topics that turn "a square that
+    moves" into an actual game: collision detection (two things touching
+    each other), game states (menu vs. playing vs. game over — the "Dodger"
+    example on the <a href="../games/index.html">Games</a> page shows this),
+    keeping score, and spawning multiple objects at once. Good next step:
+    open the full Dodger example and try to explain to yourself what each
+    part is doing before asking for help with it.
+  </p>
+</main>
+
+<footer>built for a first-timer &middot; nothing here can be broken permanently</footer>
+</body>
+</html>
