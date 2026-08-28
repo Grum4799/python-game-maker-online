@@ -17,7 +17,7 @@
     flex-shrink: 0; font-size: 0.9rem;
   }
   .step h4 { margin: 0.1rem 0 0.35rem; }
-  .step p { margin: 0; color: var(--ink-dim); }
+  .step p { margin: 0 0 0.5rem; color: var(--ink-dim); }
   .step code { color: var(--teal); }
   .challenge-list { padding-left: 1.1rem; color: var(--ink-dim); }
   .challenge-list li { margin: 0.5rem 0; }
@@ -25,6 +25,13 @@
   .oops h4 { margin: 0 0 0.2rem; color: #e0938c; font-size: 0.95rem; }
   .oops p { margin: 0; color: var(--ink-dim); font-size: 0.92rem; }
   code, .terminal pre, .terminal .out { word-break: break-word; }
+  .toc { columns: 2; gap: 2rem; margin: 1.2rem 0 2.5rem; }
+  .toc a { display: block; font-family: var(--mono); font-size: 0.88rem; padding: 0.25rem 0; color: var(--ink-dim); }
+  .toc a:hover { color: var(--amber); text-decoration: none; }
+  section.chapter { border-top: 1px solid var(--rule); padding-top: 2.2rem; margin-top: 2.8rem; }
+  .glossary dt { font-family: var(--mono); color: var(--amber); margin-top: 0.9rem; }
+  .glossary dd { margin: 0.15rem 0 0; color: var(--ink-dim); }
+  .diff-add { color: var(--teal); }
 </style>
 </head>
 <body>
@@ -42,176 +49,425 @@
 
 <main>
   <div class="eyebrow">zero experience required</div>
-  <h1 style="font-size: 1.9rem;">Your first game, in about 15 minutes</h1>
+  <h1 style="font-size: 1.9rem;">Learn to build games here, from nothing</h1>
   <p class="lede">
-    You don't need to install anything or already know how to code. This page
-    walks you through changing a real game, piece by piece, until it makes
-    sense. By the end you'll understand enough to start changing things on
-    your own.
+    You don't need to install anything or already know how to code. This guide
+    starts from "what even is a program" and ends with you building a small
+    game completely from scratch, line by line. Take it in one sitting or
+    spread it over a few days — nothing here has a time limit.
   </p>
 
+  <div class="toc">
+    <a href="#ch1">1. Run something that already works</a>
+    <a href="#ch2">2. What a program actually is</a>
+    <a href="#ch3">3. The building blocks of Python</a>
+    <a href="#ch4">4. Reading the example, line by line</a>
+    <a href="#ch5">5. Warm-up edits</a>
+    <a href="#ch6">6. Build a game from a blank canvas</a>
+    <a href="#ch7">7. Challenges with no answers given</a>
+    <a href="#ch8">8. When something goes wrong</a>
+    <a href="#ch9">9. Glossary</a>
+    <a href="#ch10">10. What's next</a>
+  </div>
+
+  <section class="chapter" id="ch1">
+  <h2 style="font-size: 1.2rem;">1. Run something that already works</h2>
   <div class="step">
     <div class="num">1</div>
     <div>
       <h4>Open the game editor</h4>
       <p>
-        Go to the <a href="../make/index.html">Make</a> page. You'll see code
-        on the left and a black rectangle (the canvas) on the right — that's
-        where the game will appear.
+        Go to the <a href="../make/index.html">Make</a> page. Code sits on the
+        left, a black rectangle (the canvas) sits on the right — that's where
+        the game appears.
       </p>
     </div>
   </div>
-
   <div class="step">
     <div class="num">2</div>
     <div>
       <h4>Click Run</h4>
       <p>
-        An orange square appears. Press the arrow keys — it moves. Press
-        space — it changes color. That's a whole game, already written for
-        you. Everything below is about understanding and changing it.
+        An orange square appears. Arrow keys move it, space changes its
+        color. That's a full, working game — already written for you. The
+        rest of this page is about understanding it well enough to write
+        your own.
       </p>
     </div>
   </div>
+  </section>
 
-  <h2 style="margin-top: 2.5rem; font-size: 1.2rem;">The four ideas behind every game</h2>
-  <p class="lede">
-    Every line of code in that box is doing one of four things. Once these
-    click, you can read almost any short program.
+  <section class="chapter" id="ch2">
+  <h2 style="font-size: 1.2rem;">2. What a program actually is</h2>
+  <p class="lede" style="max-width: 68ch;">
+    A program is a list of instructions, followed one at a time, top to
+    bottom — like a recipe. The computer doesn't understand anything about
+    "games." It just does exactly what each line says, in order, extremely
+    fast. Everything you'll learn below is really just different ways of
+    controlling <em>which</em> lines run, and <em>how many times</em>.
   </p>
+  <p class="lede" style="max-width: 68ch;">
+    A running game is a loop that does the same three things roughly 60
+    times every second: <strong>check what the player is doing</strong>
+    (input), <strong>update where everything is</strong> (movement, scoring,
+    collisions), and <strong>draw the current picture</strong> (output). Each
+    pass through that loop is one <em>frame</em>. This "input → update →
+    draw, repeat" pattern is the one idea underneath every game you've ever
+    played, from Tetris to the biggest console releases. Keep it in mind —
+    you'll see it structure everything below.
+  </p>
+  </section>
+
+  <section class="chapter" id="ch3">
+  <h2 style="font-size: 1.2rem;">3. The building blocks of Python</h2>
+  <p class="lede">Six ideas cover almost everything you'll read or write for a long time.</p>
 
   <div class="card-grid">
     <div class="card">
       <span class="tag">variable</span>
       <h3>A labeled box for a value</h3>
-      <p><code>SPEED = 200</code> means "make a box called SPEED and put 200 in it." Later, the code says <code>box.x += SPEED * dt</code> — it's using the number from the box.</p>
+      <p><code>SPEED = 200</code> means "make a box called SPEED and put 200 in it." Later, <code>box.x += SPEED * dt</code> reads the number back out. Give variables names that say what they hold — future-you will thank you.</p>
     </div>
     <div class="card">
-      <span class="tag">if statement</span>
+      <span class="tag">types</span>
+      <h3>Different kinds of value</h3>
+      <p><code>200</code> is a number (<code>int</code>). <code>3.5</code> is a decimal (<code>float</code>). <code>"hello"</code> is text (<code>str</code>). <code>True</code>/<code>False</code> is a yes/no (<code>bool</code>). <code>(255, 0, 0)</code> is a fixed-size group (<code>tuple</code>) — that's how colors are stored: red, green, blue.</p>
+    </div>
+    <div class="card">
+      <span class="tag">if / elif / else</span>
       <h3>Do this, only when...</h3>
-      <p><code>if pressed[pg.K_LEFT]:</code> means "only run the next line if the left arrow key is currently held down." Skip it otherwise.</p>
+      <p><code>if pressed[pg.K_LEFT]:</code> means "only run the next indented line if the left arrow is held." <code>elif</code> checks another condition if the first was false; <code>else</code> catches everything else.</p>
     </div>
     <div class="card">
       <span class="tag">loop</span>
-      <h3>Repeat, forever</h3>
-      <p><code>while running:</code> repeats everything inside it, over and over — once per frame. That's the entire trick behind animation: draw, wait a tiny bit, draw again, ~60 times a second.</p>
+      <h3>Repeat, on purpose</h3>
+      <p><code>while running:</code> repeats everything indented under it for as long as <code>running</code> stays <code>True</code>. <code>for b in blocks:</code> repeats once for every item in a list, one at a time.</p>
+    </div>
+    <div class="card">
+      <span class="tag">list</span>
+      <h3>An ordered collection</h3>
+      <p><code>blocks = []</code> starts an empty list. <code>blocks.append(x)</code> adds something to the end. A falling-objects game is really just "a list of things, each moved down a little every frame."</p>
     </div>
     <div class="card">
       <span class="tag">function</span>
-      <h3>A named recipe</h3>
-      <p><code>pg.draw.rect(...)</code> is a function someone else already wrote — you just tell it what color and where, and it handles the actual drawing.</p>
+      <h3>A named, reusable recipe</h3>
+      <p><code>pg.draw.rect(...)</code> is a function someone else wrote — you just tell it what and where, it handles the how. You can write your own too: <code>def spawn_block():</code> defines one; calling <code>spawn_block()</code> runs it.</p>
     </div>
   </div>
 
-  <h2 style="margin-top: 3rem; font-size: 1.2rem;">Now change it yourself</h2>
-  <p class="lede">
-    Make each change below, click Run again, and see what happened before
-    moving to the next one. There's no way to break anything permanently —
-    "Reset to example" on the Make page brings back the original any time.
+  <p class="lede" style="max-width: 68ch; margin-top: 1.2rem;">
+    Two more things that trip people up early: <strong>indentation</strong>
+    (the spaces at the start of a line) is how Python knows what's "inside"
+    an <code>if</code> or a loop — lines at the same indent level run
+    together as a group. And <strong>dot notation</strong> — things like
+    <code>screen.fill(...)</code> or <code>box.x</code> — means "reach inside
+    this thing (<code>screen</code>, <code>box</code>) and use its
+    <code>fill</code> or <code>x</code>." Almost everything in the game code
+    is either a plain variable or something-dot-something.
+  </p>
+  </section>
+
+  <section class="chapter" id="ch4">
+  <h2 style="font-size: 1.2rem;">4. Reading the example, line by line</h2>
+  <p class="lede" style="max-width: 68ch;">
+    Here's the exact code you ran in chapter 1, broken into pieces with what
+    each one is doing. Have the Make page open in another tab and match these
+    up against the real thing.
+  </p>
+
+  <div class="step">
+    <div class="num">A</div>
+    <div>
+      <h4>Setting the stage</h4>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">import webgame as pg
+
+WIDTH, HEIGHT = 400, 300
+pg.init()
+screen = pg.display.set_mode((WIDTH, HEIGHT))</pre></div>
+      <p><code>import webgame as pg</code> loads this site's drawing/input toolkit and gives it the short nickname <code>pg</code>. <code>WIDTH, HEIGHT = 400, 300</code> sets two variables in one line. <code>pg.display.set_mode(...)</code> creates the canvas at that size and hands back a <code>Surface</code> — the thing you draw onto — stored in <code>screen</code>.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">B</div>
+    <div>
+      <h4>Things that can change</h4>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">box = pg.Rect(WIDTH // 2 - 20, HEIGHT // 2 - 20, 40, 40)
+SPEED = 200
+color = (232, 163, 61)
+elapsed = 0.0</pre></div>
+      <p>This is the game's <em>state</em> — everything that can be different from one frame to the next. <code>box</code> is a rectangle (position + size) tracking the square. Notice <code>SPEED</code> never changes during play (a constant, by convention written in capitals) while <code>color</code> and <code>elapsed</code> do.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">C</div>
+    <div>
+      <h4>The loop itself</h4>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">async def main():
+    global color, elapsed
+    running = True
+    while running:
+        dt = (await clock.tick(60)) / 1000.0
+        elapsed += dt</pre></div>
+      <p><code>while running:</code> is the game loop — this repeats every frame until something sets <code>running</code> to <code>False</code>. <code>clock.tick(60)</code> waits for the next screen refresh and reports how much time actually passed, in milliseconds; dividing by 1000 converts that to seconds and stores it as <code>dt</code> ("delta time"). Every movement in the game is written as "distance per second times <code>dt</code>," which is <em>why</em> the square moves at the same speed no matter how fast or slow the computer running it is.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">D</div>
+    <div>
+      <h4>Input</h4>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">for e in pg.event.get():
+    if e.type == pg.QUIT:
+        running = False
+    if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
+        color = (79, 184, 166) if color != (79, 184, 166) else (232, 163, 61)
+
+pressed = pg.key.get_pressed()
+if pressed[pg.K_LEFT]:
+    box.x -= SPEED * dt</pre></div>
+      <p>There are two different ways input shows up. <code>pg.event.get()</code> gives one-time notifications — "space was <em>just</em> pressed" — good for actions that should happen once per press. <code>pg.key.get_pressed()</code> gives the current held-down state of every key — good for continuous movement, since you want the square to keep moving the whole time a key is down, not just on the first frame.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">E</div>
+    <div>
+      <h4>Drawing</h4>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">screen.fill((20, 23, 31))
+pg.draw.rect(screen, color, box, border_radius=8)
+label = font.render(f"t={elapsed:4.1f}s", True, (237, 233, 223))
+screen.blit(label, (10, 10))</pre></div>
+      <p>Drawing always goes in this order: clear the screen first (<code>fill</code>), then draw everything on top of that fresh background, every single frame — even things that "didn't move." There's no way to erase just one object; you redraw the whole picture instead. <code>font.render(...)</code> turns text into a small image; <code>blit</code> stamps that image onto the screen at a position.</p>
+    </div>
+  </div>
+  </section>
+
+  <section class="chapter" id="ch5">
+  <h2 style="font-size: 1.2rem;">5. Warm-up edits</h2>
+  <p class="lede">Make each change, click Run, see what happened, then move on. "Reset to example" undoes everything if you want a clean slate.</p>
+
+  <div class="step">
+    <div class="num">1</div>
+    <div><h4>Change the color</h4><p>Change <code>color = (232, 163, 61)</code> to <code>(255, 0, 0)</code>. Try <code>(0, 255, 0)</code> next. Each number is red, green, blue, 0–255.</p></div>
+  </div>
+  <div class="step">
+    <div class="num">2</div>
+    <div><h4>Change the speed</h4><p>Change <code>SPEED = 200</code> to <code>600</code>, then to <code>50</code>. Watch how the feel of the game changes with just one number.</p></div>
+  </div>
+  <div class="step">
+    <div class="num">3</div>
+    <div><h4>Change the size</h4><p>In <code>pg.Rect(WIDTH // 2 - 20, HEIGHT // 2 - 20, 40, 40)</code>, the last two numbers are width and height. Try <code>80, 80</code>.</p></div>
+  </div>
+  <div class="step">
+    <div class="num">4</div>
+    <div><h4>Add a second key</h4><p>Copy the two <code>K_SPACE</code> lines, paste them below, change <code>pg.K_SPACE</code> to <code>pg.K_r</code> and pick new colors. Now two keys, two different color changes.</p></div>
+  </div>
+  </section>
+
+  <section class="chapter" id="ch6">
+  <h2 style="font-size: 1.2rem;">6. Build a game from a blank canvas</h2>
+  <p class="lede" style="max-width: 68ch;">
+    Editing an existing game teaches you to read code. Building one from
+    nothing teaches you to think in code — which is the actual skill. Type
+    each step into the Make editor yourself rather than copy-pasting; typing
+    it is what makes it stick. We're building <strong>Catch the Coins</strong>:
+    a paddle at the bottom catches falling coins for points, and missing too
+    many ends the game.
   </p>
 
   <div class="step">
     <div class="num">1</div>
     <div>
-      <h4>Change the color</h4>
-      <p>
-        Find <code>color = (232, 163, 61)</code> near the top. Those three
-        numbers are red, green, blue — each from 0 to 255. Change them to
-        <code>(255, 0, 0)</code> and run it. The square is red now. Try
-        <code>(0, 255, 0)</code>, then whatever you want.
-      </p>
+      <h4>An empty window</h4>
+      <p>Every game starts the same way — set up the window, then loop forever until told to stop:</p>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">import webgame as pg
+
+WIDTH, HEIGHT = 400, 500
+pg.init()
+screen = pg.display.set_mode((WIDTH, HEIGHT))
+clock = pg.time.Clock()
+
+async def main():
+    running = True
+    while running:
+        dt = (await clock.tick(60)) / 1000.0
+        for e in pg.event.get():
+            if e.type == pg.QUIT:
+                running = False
+        screen.fill((20, 23, 31))
+    pg.quit()
+
+await main()</pre></div>
+      <p>Run it. You'll see a dark rectangle and nothing else — that's expected. This skeleton (setup, then loop with input-update-draw) is the shape every game in this guide shares.</p>
     </div>
   </div>
 
   <div class="step">
     <div class="num">2</div>
     <div>
-      <h4>Make it faster</h4>
-      <p>
-        Find <code>SPEED = 200</code>. That's how many pixels it moves per
-        second. Change it to <code>600</code> and run — the square zips
-        around. Try <code>50</code> — it crawls.
-      </p>
+      <h4>Add the paddle</h4>
+      <p>Before <code>async def main():</code>, add a rectangle to represent the player:</p>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">paddle = pg.Rect(WIDTH // 2 - 40, HEIGHT - 30, 80, 14)</pre></div>
+      <p>Then, inside the loop, after <code>screen.fill(...)</code>, draw it:</p>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">pg.draw.rect(screen, (232, 163, 61), paddle, border_radius=4)</pre></div>
+      <p>Run it — a paddle sits at the bottom. It doesn't move yet, because nothing is reading input.</p>
     </div>
   </div>
 
   <div class="step">
     <div class="num">3</div>
     <div>
-      <h4>Make it bigger</h4>
-      <p>
-        Find the line that creates the square:
-        <code>box = pg.Rect(WIDTH // 2 - 20, HEIGHT // 2 - 20, 40, 40)</code>.
-        The last two numbers are its width and height. Change both
-        <code>40</code>s to <code>80</code> — bigger square. The
-        <code>- 20</code>s are there to keep it centered; if you're curious,
-        try changing the size without touching them and see what happens to
-        where it starts.
-      </p>
+      <h4>Move it</h4>
+      <p>Right after the <code>for e in pg.event.get():</code> block, read the keyboard and move the paddle:</p>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">pressed = pg.key.get_pressed()
+if pressed[pg.K_LEFT]:
+    paddle.x -= 320 * dt
+if pressed[pg.K_RIGHT]:
+    paddle.x += 320 * dt
+paddle.x = max(0, min(WIDTH - paddle.width, paddle.x))</pre></div>
+      <p>That last line stops the paddle from sliding off either edge — it clamps <code>paddle.x</code> between 0 and the furthest-right position that still fits on screen.</p>
     </div>
   </div>
 
   <div class="step">
     <div class="num">4</div>
     <div>
-      <h4>Add a new key</h4>
-      <p>
-        Find this block:
-      </p>
-      <div class="terminal" style="margin: 0.6rem 0;">
-        <div class="bar"><span></span><span></span><span></span></div>
-        <pre class="out" style="color: var(--ink);">if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
-    color = (79, 184, 166) if color != (79, 184, 166) else (232, 163, 61)</pre>
-      </div>
-      <p>
-        Copy those two lines, paste them right below, and change
-        <code>pg.K_SPACE</code> to <code>pg.K_r</code> and the two colors to
-        something new. Now both space <em>and</em> R change the color — to
-        different colors.
-      </p>
+      <h4>Add one falling coin</h4>
+      <p>Near the paddle line, add a coin and its speed:</p>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">coin = pg.Rect(WIDTH // 2 - 8, 0, 16, 16)
+coin_speed = 150</pre></div>
+      <p>In the loop, after the paddle movement code, move the coin down and draw it:</p>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">coin.y += coin_speed * dt
+pg.draw.circle(screen, (79, 184, 166), coin.center, 8)</pre></div>
+      <p>Run it — one coin falls straight through the bottom and disappears forever. That's the next problem to solve.</p>
     </div>
   </div>
 
-  <h2 style="margin-top: 3rem; font-size: 1.2rem;">Try these on your own</h2>
-  <p class="lede">No answers given — this is where it starts being genuinely yours.</p>
-  <ul class="challenge-list">
-    <li>Make the square move twice as fast when you hold a key called <code>pg.K_LSHIFT</code>.</li>
-    <li>Make the timer text in the corner a different color.</li>
-    <li>Make the circle near the bottom follow the square's <code>x</code> position instead of staying still.</li>
-    <li>Make the square wrap around to the other side of the screen instead of stopping at the edge (hint: look at where <code>box.x</code> gets clamped with <code>max</code>/<code>min</code>).</li>
-    <li>Make pressing <code>pg.K_UP</code> and <code>pg.K_DOWN</code> also change the square's size instead of moving it.</li>
-  </ul>
+  <div class="step">
+    <div class="num">5</div>
+    <div>
+      <h4>Make it respawn</h4>
+      <p>Right after moving the coin, check whether it fell off the bottom, and if so, send it back to the top at a random x position:</p>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">import random
+</pre></div>
+      <p>(add that import at the very top of the file, next to <code>import webgame as pg</code>). Then, after <code>coin.y += coin_speed * dt</code>:</p>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">if coin.y > HEIGHT:
+    coin.y = -16
+    coin.x = random.randint(0, WIDTH - 16)</pre></div>
+      <p>Now the coin falls forever, reappearing at a new spot each time it reaches the bottom.</p>
+    </div>
+  </div>
 
-  <h2 style="margin-top: 3rem; font-size: 1.2rem;">When something goes wrong</h2>
+  <div class="step">
+    <div class="num">6</div>
+    <div>
+      <h4>Catch it — collision and score</h4>
+      <p>Add a score variable near the top: <code>score = 0</code>. Real games check "is the player touching the object" every frame — <code>Rect</code> already knows how to answer that with <code>colliderect</code>. Replace the respawn check with:</p>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">if coin.colliderect(paddle):
+    score += 1
+    coin.y = -16
+    coin.x = random.randint(0, WIDTH - 16)
+elif coin.y > HEIGHT:
+    coin.y = -16
+    coin.x = random.randint(0, WIDTH - 16)</pre></div>
+      <p><code>score</code> needs <code>global score</code> added at the top of <code>async def main():</code>, same as <code>color</code> did in the first example — any variable defined outside a function that gets <em>changed</em> inside it needs to be declared <code>global</code> first.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">7</div>
+    <div>
+      <h4>Show the score</h4>
+      <p>Set up a font once, outside the loop: <code>font = pg.font.SysFont("monospace", 20)</code>. Then, after drawing the paddle and coin:</p>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">label = font.render(f"score: {score}", True, (237, 233, 223))
+screen.blit(label, (10, 10))</pre></div>
+      <p>Run it — catch coins, watch the number climb. This is already a real, playable game.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">8</div>
+    <div>
+      <h4>Add lives and a game over</h4>
+      <p>Add <code>lives = 3</code> near <code>score</code> (and add it to the <code>global</code> line too). In the miss branch (<code>elif coin.y > HEIGHT:</code>), subtract a life instead of nothing:</p>
+      <div class="terminal" style="margin: 0.5rem 0;"><div class="bar"><span></span><span></span><span></span></div><pre class="out" style="color: var(--ink);">elif coin.y > HEIGHT:
+    lives -= 1
+    coin.y = -16
+    coin.x = random.randint(0, WIDTH - 16)
+    if lives <= 0:
+        running = False</pre></div>
+      <p>Show it next to the score: <code>f"score: {score}   lives: {lives}"</code>. Now missing three coins ends the game — you've just built a complete win/lose condition, the same pattern behind every scored game that exists.</p>
+    </div>
+  </div>
+  </section>
+
+  <section class="chapter" id="ch7">
+  <h2 style="font-size: 1.2rem;">7. Challenges with no answers given</h2>
+  <p class="lede">Pick whichever sounds fun. Skipping around is fine.</p>
+  <p class="lede" style="margin: 0.6rem 0 0.2rem; font-family: var(--mono); font-size: 0.85rem; color: var(--amber);">EASIER</p>
+  <ul class="challenge-list">
+    <li>Make the paddle move faster when a key called <code>pg.K_LSHIFT</code> is held.</li>
+    <li>Make the coin a different color each time it respawns.</li>
+    <li>Make the falling speed increase slightly every time a coin is caught.</li>
+  </ul>
+  <p class="lede" style="margin: 1rem 0 0.2rem; font-family: var(--mono); font-size: 0.85rem; color: var(--amber);">MEDIUM</p>
+  <ul class="challenge-list">
+    <li>Add a second coin, falling independently, using its own variables (or, if you're feeling bold, a list of coins).</li>
+    <li>Add a "game over" message that appears once <code>lives</code> reaches 0, instead of the game just quietly stopping.</li>
+    <li>Add a key that resets <code>score</code> and <code>lives</code> back to their starting values without reloading the page.</li>
+  </ul>
+  <p class="lede" style="margin: 1rem 0 0.2rem; font-family: var(--mono); font-size: 0.85rem; color: var(--amber);">HARDER</p>
+  <ul class="challenge-list">
+    <li>Rewrite the single <code>coin</code> as a <em>list</em> of coins, spawning a new one every couple of seconds (look at how <code>games/dodger/main.py</code> on the Games page does this for falling blocks).</li>
+    <li>Make coins fall at slightly different, random speeds, so they don't all move in sync.</li>
+    <li>Add a "bad" object (a different color) that costs a life if caught instead of a point — now the player has to make quick decisions, not just react.</li>
+  </ul>
+  </section>
+
+  <section class="chapter" id="ch8">
+  <h2 style="font-size: 1.2rem;">8. When something goes wrong</h2>
   <p class="lede">Every beginner hits these. They're not a sign you did something badly wrong.</p>
 
-  <div class="oops">
-    <h4>IndentationError</h4>
-    <p>Python cares about spaces at the start of a line. If a line inside an <code>if</code> or <code>while</code> isn't lined up with the lines around it, fix the spacing so it matches.</p>
-  </div>
-  <div class="oops">
-    <h4>SyntaxError: expected ':'</h4>
-    <p>Lines that start a block — <code>if</code>, <code>while</code>, <code>for</code>, <code>def</code> — need a colon at the end. Easy to forget.</p>
-  </div>
-  <div class="oops">
-    <h4>NameError: name 'x' is not defined</h4>
-    <p>You used a variable before creating it, or misspelled its name. Check the spelling matches exactly, including capital letters.</p>
-  </div>
-  <div class="oops">
-    <h4>Nothing seems to happen when you click Run</h4>
-    <p>Check the text next to the Run button says "ready," not "loading" or "failed." The engine takes a couple seconds to load the first time.</p>
-  </div>
+  <div class="oops"><h4>IndentationError</h4><p>Python cares about spaces at the start of a line. If a line inside an <code>if</code> or <code>while</code> isn't lined up with the lines around it, fix the spacing so it matches.</p></div>
+  <div class="oops"><h4>SyntaxError: expected ':'</h4><p>Lines that start a block — <code>if</code>, <code>while</code>, <code>for</code>, <code>def</code> — need a colon at the end. Easy to forget.</p></div>
+  <div class="oops"><h4>NameError: name 'x' is not defined</h4><p>You used a variable before creating it, or misspelled its name. Check the spelling matches exactly, including capital letters.</p></div>
+  <div class="oops"><h4>SyntaxError: name 'score' is used prior to global declaration</h4><p>Any variable set outside a function that you plan to <em>change</em> inside <code>async def main():</code> needs <code>global that_name</code> as the very first line of the function, before it's used.</p></div>
+  <div class="oops"><h4>Nothing seems to happen when you click Run</h4><p>Check the text next to the Run button says "ready," not "loading" or "failed." The engine takes a couple seconds to load the first time.</p></div>
+  </section>
 
-  <h2 style="margin-top: 3rem; font-size: 1.2rem;">Once this all feels comfortable</h2>
+  <section class="chapter" id="ch9">
+  <h2 style="font-size: 1.2rem;">9. Glossary</h2>
+  <dl class="glossary">
+    <dt>variable</dt><dd>A named place to store a value that can change.</dd>
+    <dt>function</dt><dd>A named, reusable block of instructions you can run by writing its name followed by parentheses.</dd>
+    <dt>loop</dt><dd>Code that repeats — <code>while</code> repeats based on a condition, <code>for</code> repeats once per item in a collection.</dd>
+    <dt>condition</dt><dd>A statement that's either <code>True</code> or <code>False</code>, used by <code>if</code> to decide whether to run some code.</dd>
+    <dt>indentation</dt><dd>The spaces at the start of a line, which Python uses to know what's "inside" a loop, function, or <code>if</code>.</dd>
+    <dt>Rect</dt><dd>A rectangle — position plus width and height — used here for anything that needs a location and a size: the player, coins, obstacles.</dd>
+    <dt>Surface</dt><dd>Something you can draw onto — the screen itself is one; you can also make offscreen ones.</dd>
+    <dt>frame</dt><dd>One pass through the game loop — one "tick" of input, update, and draw. Games usually run around 60 frames per second.</dd>
+    <dt>delta time (dt)</dt><dd>How much real time passed since the last frame, used so movement speed stays the same regardless of how fast the computer is running the game.</dd>
+    <dt>collision detection</dt><dd>Checking whether two things overlap — <code>colliderect</code> answers this for two rectangles.</dd>
+    <dt>state</dt><dd>Everything about the current situation that can change over time — score, position, lives, whether the game is over.</dd>
+  </dl>
+  </section>
+
+  <section class="chapter" id="ch10">
+  <h2 style="font-size: 1.2rem;">10. What's next</h2>
   <p class="lede" style="max-width: 66ch;">
-    That's the point to start learning the topics that turn "a square that
-    moves" into an actual game: collision detection (two things touching
-    each other), game states (menu vs. playing vs. game over — the "Dodger"
-    example on the <a href="../games/index.html">Games</a> page shows this),
-    keeping score, and spawning multiple objects at once. Good next step:
-    open the full Dodger example and try to explain to yourself what each
-    part is doing before asking for help with it.
+    You now understand game state, the input-update-draw loop, collision
+    detection, scoring, and win/lose conditions — which covers a genuinely
+    large fraction of what makes any 2D game work. Good next steps to learn
+    with your friend: multiple enemy types with different behavior, a start
+    menu before the game begins, sound effects, saving a high score, and
+    reading the full <code>games/dodger/main.py</code> example on the
+    <a href="../games/index.html">Games</a> page — it uses the same ideas
+    from this guide, just with several falling objects tracked in a list
+    instead of one.
   </p>
+  </section>
 </main>
 
 <footer>built for a first-timer &middot; nothing here can be broken permanently</footer>
